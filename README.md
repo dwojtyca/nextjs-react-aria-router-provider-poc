@@ -16,21 +16,24 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## What is this POC about?
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This small POC is to demonstrate how we can approach client side routing with react-aria-components (RouterProvider) and NextJS Router (React Router / TanStack Router / Remix Router could be used as well).
 
-## Learn More
+Application is splitted into server-routing and client-routing routing. Both parts are identical with one small difference - client-side is wrapped with RouterProvider provided by react-aria-components. As a result in client-routing we can have:
 
-To learn more about Next.js, take a look at the following resources:
+- routing without full page reload
+- re-render only what's needed (e.g. Nav component is not re-rendered, only content is)
+- nice loaders when changing page (better UI/UX for end users)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### What about SSR?
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Well, thanks to the NextJS [partial prerendering](https://nextjs.org/docs/app/getting-started/partial-prerendering#how-does-partial-prerendering-work) there is no visible difference in page source returned from server between client-routing and server-routing, so wrapping whole app inside `use client` doesn't make any difference (tested with static pages / dynamic pages / with and without fetching data).
 
-## Deploy on Vercel
+### What about SSR?
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+All components from react-aria-components that displays a link \<a href>\ can accept `routerOptions` prop by default. For NextJS case this object has only [`scroll: boolean`](https://nextjs.org/docs/14/app/api-reference/functions/use-router#disabling-scroll-restoration) as property. There is no way to pass for example `prefetch` using `routerOptions`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### How to pass prefetch or other stuff from NextJS link?
+
+It's possible and quite easy to achieve, just create a component (`NextAriaLink` in case of this POC), make it accept props that you need and make `prefetch` possible programmatically using `router.prefetch(href)`.
