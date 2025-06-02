@@ -32,8 +32,18 @@ Well, thanks to the NextJS [partial prerendering](https://nextjs.org/docs/app/ge
 
 ### What about SSR?
 
-All components from react-aria-components that displays a link \<a href>\ can accept `routerOptions` prop by default. For NextJS case this object has only [`scroll: boolean`](https://nextjs.org/docs/14/app/api-reference/functions/use-router#disabling-scroll-restoration) as property. There is no way to pass for example `prefetch` using `routerOptions`.
+All components from react-aria-components that displays a link \<a href\> can accept `routerOptions` prop by default. For NextJS case this object has only [`scroll: boolean`](https://nextjs.org/docs/14/app/api-reference/functions/use-router#disabling-scroll-restoration) as property. There is no way to pass for example `prefetch` using `routerOptions`.
 
 ### How to pass prefetch or other stuff from NextJS link?
 
 It's possible and quite easy to achieve, just create a component (`NextAriaLink` in case of this POC), make it accept props that you need and make `prefetch` possible programmatically using `router.prefetch(href)`.
+
+### Differences when using onPress with client side routing and server side routing
+
+#### Client side routing
+
+When using client side routing, onPress event handler with async operations (like sending analytics data to GA, for example) are handled correctly as long as internal link is used. Even when handler takes more time than page change, it's still finished.
+
+#### Server side routing
+
+On the other hand - when server side routing is used (no RouterProvider) onPress event might not be finished until page changes and because of page change with server side routing requires full page reload, there is no guarantee that async onPress handler will be finished (e.g. after page reload request to GA with some event and payload will be cancelled by browser).
